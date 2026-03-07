@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Daily News — AI-Generated Satire</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- Header component: topbar + sticky nav + ticker.
+         Fetched from header.html and injected by app.js  -->
+    <div id="header-mount"></div>
+
+    <!-- ============================================
+         MAIN CONTENT
+         .is-loading triggers shimmer on text placeholders.
+         JS removes this class once data is injected.
+         ============================================ -->
+    <main id="main-content" class="is-loading">
+        <div class="container">
+
+            <!-- ==========================================
+                 HERO SECTION
+                 Full-width card with image as background,
+                 gradient overlay, text anchored to bottom.
+                 IDs: hero-link, hero-image, hero-title,
+                      hero-tagline, hero-badge
+                 ========================================== -->
+            <section class="hero-section">
+                <a href="#" id="hero-link" class="hero-card">
+                    <img id="hero-image" src="" alt="" class="hero-image">
+                    <div class="hero-overlay"></div>
+                    <div class="hero-body">
+                        <span id="hero-badge" class="category-pill pill-satire">SATIRE</span>
+                        <h1 id="hero-title" class="hero-title">Loading headline...</h1>
+                        <p id="hero-tagline" class="hero-tagline">Loading tagline...</p>
+                        <span class="hero-read-time">3 min read</span>
+                    </div>
+                </a>
+            </section>
+
+            <!-- ==========================================
+                 FEATURED STORIES
+                 Asymmetric 2-column grid.
+                 Left (2fr): large card1.
+                 Right (1fr): card2 + card3 stacked.
+                 IDs: card1-*, card2-*, card3-*
+                 ========================================== -->
+            <section class="featured-section">
+                <div class="section-header">
+                    <h2 class="section-title">Featured Stories</h2>
+                    <a href="#" class="section-more">See all &rarr;</a>
+                </div>
+                <div class="featured-grid">
+
+                    <!-- Large primary card -->
+                    <a href="#" id="card1-link" class="story-card story-card--large">
+                        <div class="card-image-wrap">
+                            <img id="card1-image" src="" alt="" class="card-image">
+                            <span id="card1-badge" class="badge-overlay">SATIRE</span>
+                        </div>
+                        <div class="card-body">
+                            <h3 id="card1-title" class="card-title card-title--large">Loading...</h3>
+                            <p id="card1-tagline" class="card-tagline">Loading...</p>
+                        </div>
+                    </a>
+
+                    <!-- Sidebar: two smaller stacked cards -->
+                    <div class="featured-sidebar">
+                        <a href="#" id="card2-link" class="story-card story-card--side">
+                            <div class="card-image-wrap card-image-wrap--side">
+                                <img id="card2-image" src="" alt="" class="card-image">
+                                <span id="card2-badge" class="badge-overlay">SATIRE</span>
+                            </div>
+                            <div class="card-body">
+                                <h3 id="card2-title" class="card-title">Loading...</h3>
+                                <p id="card2-tagline" class="card-tagline">Loading...</p>
+                            </div>
+                        </a>
+                        <a href="#" id="card3-link" class="story-card story-card--side">
+                            <div class="card-image-wrap card-image-wrap--side">
+                                <img id="card3-image" src="" alt="" class="card-image">
+                                <span id="card3-badge" class="badge-overlay">SATIRE</span>
+                            </div>
+                            <div class="card-body">
+                                <h3 id="card3-title" class="card-title">Loading...</h3>
+                                <p id="card3-tagline" class="card-tagline">Loading...</p>
+                            </div>
+                        </a>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 TOP ARTICLES OF THE MONTH
+                 2-column grid. Each card has a large rank
+                 number, thumbnail image, title, tagline.
+                 IDs: top1-* through top6-*
+                 ========================================== -->
+            <section class="top-month-section">
+                <div class="section-header">
+                    <h2 class="section-title">Top Articles of the Month</h2>
+                    <a href="#" class="section-more">See all &rarr;</a>
+                </div>
+                <div class="top-month-grid">
+                    <!-- Top 1 -->
+                    <a href="#" id="top1-link" class="top-card">
+                        <span class="top-rank">01</span>
+                        <div class="top-card-image-wrap">
+                            <img id="top1-image" src="" alt="" class="top-card-image">
+                        </div>
+                        <div class="top-card-body">
+                            <h3 id="top1-title" class="top-card-title">Loading...</h3>
+                            <p id="top1-tagline" class="top-card-tagline">Loading...</p>
+                        </div>
+                    </a>
+                    <!-- Top 2 -->
+                    <a href="#" id="top2-link" class="top-card">
+                        <span class="top-rank">02</span>
+                        <div class="top-card-image-wrap">
+                            <img id="top2-image" src="" alt="" class="top-card-image">
+                        </div>
+                        <div class="top-card-body">
+                            <h3 id="top2-title" class="top-card-title">Loading...</h3>
+                            <p id="top2-tagline" class="top-card-tagline">Loading...</p>
+                        </div>
+                    </a>
+                    <!-- Top 3 -->
+                    <a href="#" id="top3-link" class="top-card">
+                        <span class="top-rank">03</span>
+                        <div class="top-card-image-wrap">
+                            <img id="top3-image" src="" alt="" class="top-card-image">
+                        </div>
+                        <div class="top-card-body">
+                            <h3 id="top3-title" class="top-card-title">Loading...</h3>
+                            <p id="top3-tagline" class="top-card-tagline">Loading...</p>
+                        </div>
+                    </a>
+                    <!-- Top 4 -->
+                    <a href="#" id="top4-link" class="top-card">
+                        <span class="top-rank">04</span>
+                        <div class="top-card-image-wrap">
+                            <img id="top4-image" src="" alt="" class="top-card-image">
+                        </div>
+                        <div class="top-card-body">
+                            <h3 id="top4-title" class="top-card-title">Loading...</h3>
+                            <p id="top4-tagline" class="top-card-tagline">Loading...</p>
+                        </div>
+                    </a>
+                    <!-- Top 5 -->
+                    <a href="#" id="top5-link" class="top-card">
+                        <span class="top-rank">05</span>
+                        <div class="top-card-image-wrap">
+                            <img id="top5-image" src="" alt="" class="top-card-image">
+                        </div>
+                        <div class="top-card-body">
+                            <h3 id="top5-title" class="top-card-title">Loading...</h3>
+                            <p id="top5-tagline" class="top-card-tagline">Loading...</p>
+                        </div>
+                    </a>
+                    <!-- Top 6 -->
+                    <a href="#" id="top6-link" class="top-card">
+                        <span class="top-rank">06</span>
+                        <div class="top-card-image-wrap">
+                            <img id="top6-image" src="" alt="" class="top-card-image">
+                        </div>
+                        <div class="top-card-body">
+                            <h3 id="top6-title" class="top-card-title">Loading...</h3>
+                            <p id="top6-tagline" class="top-card-tagline">Loading...</p>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+        </div><!-- /container -->
+    </main>
+
+    <!-- Footer component: brand, links, disclaimer.
+         Fetched from footer.html and injected by app.js  -->
+    <div id="footer-mount"></div>
+
+    <!-- type="module" enables ES import/export and auto-defers execution -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

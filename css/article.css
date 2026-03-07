@@ -1,0 +1,349 @@
+/* ============================================
+   Random Daily News — Article Page Styles
+   Editorial reading layout. Complements styles.css.
+   ============================================ */
+
+/* --------------------------------------------
+   Article Page Wrapper
+   -------------------------------------------- */
+.article-page {
+    padding: var(--space-xl) 0 var(--space-2xl);
+    background-color: var(--color-bg);
+}
+
+/* Narrow column for readable line length (~680px) */
+.article-wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 var(--space-lg);
+}
+
+/* --------------------------------------------
+   Breadcrumb
+   -------------------------------------------- */
+.article-breadcrumb {
+    margin-bottom: var(--space-xl);
+}
+
+.breadcrumb-link {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-muted);
+    transition: color var(--ease-fast);
+}
+
+.breadcrumb-link:hover { color: var(--color-accent); }
+
+/* --------------------------------------------
+   Article Header
+   -------------------------------------------- */
+.article-header {
+    margin-bottom: var(--space-xl);
+}
+
+.article-meta-top {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.article-read-time {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-muted);
+}
+
+/* Large editorial headline */
+.article-title {
+    font-family: var(--font-headline);
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: var(--color-headline);
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    margin: 0 0 var(--space-lg);
+}
+
+/* Subtitle/tagline below the headline */
+.article-tagline {
+    font-size: 1.2rem;
+    color: var(--color-muted);
+    line-height: 1.55;
+    margin: 0 0 var(--space-lg);
+    font-style: italic;
+}
+
+/* Author + date row */
+.article-byline {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-separator);
+}
+
+.article-author {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-headline);
+}
+
+.byline-sep {
+    color: var(--color-separator);
+    font-size: 1rem;
+}
+
+.article-date {
+    font-size: 0.875rem;
+    color: var(--color-muted);
+}
+
+/* --------------------------------------------
+   Hero Image
+   -------------------------------------------- */
+.article-figure {
+    margin: 0 0 var(--space-xl);
+}
+
+.article-image {
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    background-color: #1c1c1c; /* dark bg while loading */
+    display: block;
+}
+
+.article-caption {
+    font-size: 0.78rem;
+    color: var(--color-muted);
+    margin-top: var(--space-sm);
+    font-style: italic;
+    line-height: 1.5;
+}
+
+/* Hide figure entirely if no image is loaded */
+.article-figure.is-hidden { display: none; }
+
+/* --------------------------------------------
+   Satire Notice
+   Amber/gold warning box — always visible.
+   -------------------------------------------- */
+.satire-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    background-color: #fffbeb;
+    border: 1px solid #fde68a;
+    border-left: 4px solid #f59e0b;
+    border-radius: var(--radius-sm);
+    padding: var(--space-md) var(--space-lg);
+    margin-bottom: var(--space-xl);
+    font-size: 0.875rem;
+    color: #78350f;
+    line-height: 1.55;
+}
+
+.satire-notice-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+/* --------------------------------------------
+   Article Body
+   Generous line-height and font size for reading.
+   -------------------------------------------- */
+.article-body {
+    font-size: 1.1rem;
+    line-height: 1.85;
+    color: var(--color-body);
+    margin-bottom: var(--space-xl);
+}
+
+/* Each paragraph injected as <p> by article.js */
+.article-body p {
+    margin: 0 0 1.6em;
+}
+
+.article-body p:last-child { margin-bottom: 0; }
+
+/* Pull quote style for any <blockquote> in the body */
+.article-body blockquote {
+    margin: var(--space-xl) 0;
+    padding: var(--space-md) var(--space-xl);
+    border-left: 3px solid var(--color-accent);
+    font-family: var(--font-headline);
+    font-size: 1.3rem;
+    font-style: italic;
+    color: var(--color-headline);
+    line-height: 1.5;
+}
+
+/* --------------------------------------------
+   Skeleton Loading Lines
+   Shown while article body is fetching.
+   -------------------------------------------- */
+.body-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.skeleton-line {
+    height: 1rem;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(90deg, #ece9e3 25%, #ddd9d2 50%, #ece9e3 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease infinite;
+    width: 100%;
+}
+
+.skeleton-line--short  { width: 55%; }
+.skeleton-line--medium { width: 78%; }
+
+/* Reveal skeleton only while is-loading; hide once removed */
+.article-body:not(.is-loading) .body-skeleton { display: none; }
+
+/* --------------------------------------------
+   Article Tags
+   -------------------------------------------- */
+.article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--color-separator);
+}
+
+.tag-pill {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border: 1px solid var(--color-separator);
+    border-radius: 20px;
+    color: var(--color-muted);
+    background-color: var(--color-surface);
+    transition: border-color var(--ease-fast), color var(--ease-fast);
+}
+
+.tag-pill:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+/* --------------------------------------------
+   Share Section
+   -------------------------------------------- */
+.article-share {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    flex-wrap: wrap;
+    padding: var(--space-xl) 0;
+    border-top: 2px solid var(--color-headline);
+}
+
+.share-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-muted);
+}
+
+.share-buttons {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
+.share-btn {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 7px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-separator);
+    background-color: var(--color-surface);
+    color: var(--color-headline);
+    cursor: pointer;
+    font-family: var(--font-body);
+    transition: background-color var(--ease-fast), border-color var(--ease-fast), color var(--ease-fast);
+}
+
+.share-btn:hover {
+    border-color: var(--color-headline);
+    background-color: var(--color-headline);
+    color: white;
+}
+
+/* Copy link "copied" feedback state set via JS */
+.share-btn--copied {
+    border-color: #059669;
+    background-color: #059669;
+    color: white;
+}
+
+/* --------------------------------------------
+   Error / Not Found State
+   -------------------------------------------- */
+.article-error {
+    text-align: center;
+    padding: var(--space-2xl) 0;
+    color: var(--color-muted);
+}
+
+.article-error h2 {
+    font-family: var(--font-headline);
+    font-size: 1.8rem;
+    color: var(--color-headline);
+    margin-bottom: var(--space-md);
+}
+
+.article-error p {
+    font-size: 1rem;
+    margin-bottom: var(--space-xl);
+}
+
+.article-error .btn-home {
+    display: inline-block;
+    background-color: var(--color-accent);
+    color: white;
+    padding: 10px 24px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    transition: background-color var(--ease-fast);
+}
+
+.article-error .btn-home:hover { background-color: var(--color-accent-dark); }
+
+/* --------------------------------------------
+   Responsive — Tablet  (< 900px)
+   -------------------------------------------- */
+@media (max-width: 900px) {
+    .article-title { font-size: 2.2rem; }
+
+    .article-image { height: 320px; }
+}
+
+/* --------------------------------------------
+   Responsive — Mobile  (< 640px)
+   -------------------------------------------- */
+@media (max-width: 640px) {
+    .article-title { font-size: 1.75rem; }
+
+    .article-tagline { font-size: 1rem; }
+
+    .article-body { font-size: 1rem; }
+
+    .article-image { height: 220px; }
+
+    .article-share { flex-direction: column; align-items: flex-start; }
+}
