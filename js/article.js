@@ -6,14 +6,14 @@
  *
  * Load sequence:
  *   1. Read ?id= from URL
- *   2. Load header.html / footer.html components in parallel
+ *   2. Load header.html / footer.html components
  *   3. Fetch Firestore document: articles/{id}
- *   4. Inject all article fields into the template
+ *   4. Inject all fields into the template
  *   5. Remove skeleton loading state
  *
- * Firestore fields used:
- *   title, tagline, authorName, category, readTime (number),
- *   imageUrl, imageAlt, imageCaption, body (string[]),
+ * Firestore fields used (with fallback aliases in parentheses):
+ *   title, tagline, authorName (author), category, readTime (number or string),
+ *   imageUrl (image), imageAlt, imageCaption, body (string[]),
  *   tags (string[]), monthKey
  */
 
@@ -135,37 +135,41 @@ function setAttr(id, attr, value) {
 }
 
 /* --------------------------------------------
-   Inject Article Data
+   Inject Article Data from Firestore
    Maps Firestore fields to DOM elements.
 
+   Field aliases (primary → fallback):
+     imageUrl   → image        (renamed in schema)
+     authorName → author       (renamed in schema)
+     readTime accepts both number (4) and string ("4 min read")
+
    Field mapping (Firestore → HTML element):
-     title        → #article-title  + document.title
+     title        → #article-title + document.title
      tagline      → #article-tagline
      authorName   → #article-author
      category     → #article-category (pill class + label)
-     readTime     → #article-read-time  (formatted: "N min read")
+     readTime     → #article-read-time ("N min read")
      imageUrl     → #article-image src
      imageAlt     → #article-image alt
      imageCaption → #article-caption
-     body[]       → <p> elements appended to #article-body
-     tags[]       → .tag-pill spans appended to #article-tags
-     monthKey     → #article-date (formatted: "Month YYYY")
+     body[]       → <p> elements in #article-body
+     tags[]       → .tag-pill spans in #article-tags
+     monthKey     → #article-date ("Month YYYY")
    -------------------------------------------- */
 function injectArticle(data) {
-    log('Injecting article data', data.title);
+    log('Injecting Firestore data', data.title);
 
-    // Title — update both the <h1> and the browser tab
-    const titleEl = document.getElementById('article-title');
-    if (titleEl && data.title) {
-        titleEl.textContent = data.title;
-        document.title = `${data.title} — Random Daily News`;
+    // Title — override Phase 1 if Firestore has one
+    const title = data.title;
+    if (title) {
+        document.title = `${title} — Random Daily News`;
+        const titleEl = document.getElementById('article-title');
+        if (titleEl) titleEl.textContent = title;
     }
 
     // Tagline
     const taglineEl = document.getElementById('article-tagline');
-    if (taglineEl && data.tagline) {
-        taglineEl.textContent = data.tagline;
-    }
+    if (taglineEl && data.tagline) taglineEl.textContent = data.tagline;
 
     // Category pill
     const categoryEl = document.getElementById('article-category');
@@ -174,41 +178,43 @@ function injectArticle(data) {
         categoryEl.textContent = data.category.toUpperCase();
     }
 
-    // Read time (numeric field → formatted string)
+    // Read time — accepts number (4) or pre-formatted string ("4 min read")
     const readTimeEl = document.getElementById('article-read-time');
     if (readTimeEl && data.readTime != null) {
-        readTimeEl.textContent = formatReadTime(data.readTime);
+        const rt = data.readTime;
+        readTimeEl.textContent = typeof rt === 'number' ? formatReadTime(rt) : rt;
     }
 
-    // Author — reveal the separator dot once we have a name
-    const authorEl = document.getElementById('article-author');
-    const sepEl    = document.getElementById('byline-sep');
-    if (authorEl && data.authorName) {
-        authorEl.textContent = data.authorName;
+    // Author — try authorName, fall back to author
+    // Reveals the separator dot once populated
+    const authorName = data.authorName || data.author;
+    const authorEl   = document.getElementById('article-author');
+    const sepEl      = document.getElementById('byline-sep');
+    if (authorEl && authorName) {
+        authorEl.textContent = authorName;
         if (sepEl) sepEl.style.display = '';
     }
 
-    // Date from monthKey ("2026-03" → "March 2026")
+    // Date — use monthKey if present; otherwise keep the Phase 1 URL date
     const dateEl = document.getElementById('article-date');
     if (dateEl && data.monthKey) {
         dateEl.textContent = formatMonthKey(data.monthKey);
     }
 
-    // Hero image (Firestore field: imageUrl)
-    if (data.imageUrl) {
-        setAttr('article-image', 'src', data.imageUrl);
+    // Hero image — try imageUrl, fall back to image (legacy field name)
+    const imageSrc = data.imageUrl || data.image;
+    if (imageSrc) {
+        setAttr('article-image', 'src', imageSrc);
         setAttr('article-image', 'alt', data.imageAlt || data.tagline || '');
     } else {
-        // Hide figure entirely if no image is available
+        // No image available — hide the figure entirely
         const fig = document.getElementById('article-figure');
         if (fig) fig.classList.add('is-hidden');
     }
 
     // Image caption
     const captionEl = document.getElementById('article-caption');
-    if (captionEl && data.imageCaption) {
-        captionEl.textContent = data.imageCaption;
-    }
+    if (captionEl && data.imageCaption) captionEl.textContent = data.imageCaption;
 
     // Body paragraphs — one <p> per array item
     const bodyEl  = document.getElementById('article-body');
@@ -222,7 +228,7 @@ function injectArticle(data) {
         });
     }
 
-    // Tags — one .tag-pill span per array item
+    // Tags — one .tag-pill span per item
     const tagsEl = document.getElementById('article-tags');
     if (tagsEl && Array.isArray(data.tags) && data.tags.length > 0) {
         data.tags.forEach(tag => {
@@ -321,9 +327,9 @@ async function init() {
     log('Initializing article page');
 
     const articleId = getArticleId();
-    log('Article ID from URL', articleId);
+    log('Article ID', articleId);
 
-    // Load site-wide components concurrently
+    // Load site-wide components concurrently with Firestore fetch
     loadComponent(CONFIG.headerUrl, 'header-mount')
         .then(() => initStickyHeader());
 
@@ -357,7 +363,7 @@ async function init() {
         removeBodyLoading();
     }
 
-    // Share buttons build their URLs from window.location, so init after load
+    // Share buttons build their URLs from window.location — init after all params are known
     initShareButtons();
 }
 

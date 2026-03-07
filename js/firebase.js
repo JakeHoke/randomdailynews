@@ -15,7 +15,7 @@ import { getFirestore }  from 'https://www.gstatic.com/firebasejs/10.11.0/fireba
    Firebase Project Config
    TODO: Replace with your actual project values
    -------------------------------------------- */
-const firebaseConfig = {
+   const firebaseConfig = {
     apiKey: "AIzaSyA_d3KDsA4Ib-qIDsYdpOVANM2z2pn9LeM",
     authDomain: "fakenewsprank-44553.firebaseapp.com",
     projectId: "fakenewsprank-44553",
@@ -27,4 +27,3 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 export const db = getFirestore(app);
-

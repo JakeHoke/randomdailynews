@@ -1,0 +1,219 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Page title is updated by article.js after the Firestore fetch resolves -->
+    <!-- URL format: /article.html?id=ARTICLE_ID -->
+    <title>Article — Random Daily News</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+
+    <!-- Shared site styles (header, footer, pills, etc.) -->
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Article-specific layout and typography -->
+    <link rel="stylesheet" href="css/article.css">
+</head>
+<body>
+
+    <!-- ============================================
+         HEADER COMPONENT MOUNT
+         Fetched from header.html and injected by article.js
+         ============================================ -->
+    <!-- ============================================
+     TOPBAR
+     Date + satire disclaimer strip (not sticky)
+     ============================================ -->
+<div class="topbar">
+    <div class="topbar-inner">
+        <span class="topbar-date">Saturday, March 7, 2026</span>
+        <span class="topbar-tagline">✦ AI-Generated Satire · 0% Reliable · 100% Entertaining</span>
+    </div>
+</div>
+
+<!-- ============================================
+     HEADER
+     Sticky. Logo + nav + Create CTA.
+     JS adds .is-scrolled on scroll to trigger shadow.
+     ============================================ -->
+<header class="site-header" id="site-header">
+    <div class="header-inner">
+        <a href="/" class="logo">
+            <span class="logo-text">Random Daily News</span>
+        </a>
+        <nav class="main-nav">
+            <a href="#" class="nav-link nav-link--active">Home</a>
+            <a href="#" class="nav-link">Top Stories</a>
+            <a href="#" class="nav-link">Most Shared</a>
+            <a href="#" class="nav-link">Politics</a>
+            <a href="#" class="nav-link">Tech</a>
+            <a href="#" class="nav-link">Entertainment</a>
+        </nav>
+        <a href="https://fakenewsprank.com" target="_blank" rel="noopener noreferrer" class="btn-create">✦ Create Your Article</a>
+    </div>
+</header>
+
+<!-- ============================================
+     BREAKING NEWS TICKER
+     Two identical spans create a seamless CSS scroll loop.
+     translateX(-50%) scrolls exactly one copy off-screen.
+     ============================================ -->
+<div class="ticker-wrap">
+    <div class="ticker-inner">
+        <span class="ticker-label">BREAKING</span>
+        <div class="ticker-overflow">
+            <div class="ticker-track">
+                <span class="ticker-content">Local man still thinking about email from Tuesday &nbsp;·&nbsp; Scientists confirm Mondays are statistically worse than previously imagined &nbsp;·&nbsp; Area CEO makes "bold decision" to use bullet points &nbsp;·&nbsp; Nation runs out of opinions, borrows some from Canada &nbsp;·&nbsp; Tech startup disrupts water with "smart moisture" &nbsp;·&nbsp; Man spends 4 hours automating 2-minute task, calls it a win &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <span class="ticker-content" aria-hidden="true">Local man still thinking about email from Tuesday &nbsp;·&nbsp; Scientists confirm Mondays are statistically worse than previously imagined &nbsp;·&nbsp; Area CEO makes "bold decision" to use bullet points &nbsp;·&nbsp; Nation runs out of opinions, borrows some from Canada &nbsp;·&nbsp; Tech startup disrupts water with "smart moisture" &nbsp;·&nbsp; Man spends 4 hours automating 2-minute task, calls it a win &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <!-- ============================================
+         ARTICLE PAGE
+         Two phases of content:
+           Phase 1 — Immediate (from URL params):
+             title, date
+           Phase 2 — API (from data/articles/{id}.json):
+             tagline, author, read time, category,
+             hero image, body paragraphs, tags
+         ============================================ -->
+    <main class="article-page">
+        <div class="article-wrap">
+
+            <!-- Breadcrumb -->
+            <nav class="article-breadcrumb" aria-label="Breadcrumb">
+                <a href="/" class="breadcrumb-link">← Back to Home</a>
+            </nav>
+
+            <!-- ==========================================
+                 ARTICLE HEADER
+                 Title and date inject immediately from URL.
+                 Category, tagline, author, read time inject
+                 after the API call resolves.
+                 ========================================== -->
+            <header class="article-header">
+                <div class="article-meta-top">
+                    <!-- Category pill: updated by API call with correct color class -->
+                    <span id="article-category" class="category-pill pill-lifestyle">LIFESTYLE</span>
+                    <!-- Read time: injected by API -->
+                    <span id="article-read-time" class="article-read-time"></span>
+                </div>
+
+                <!-- Title: set immediately from URL ?title= param -->
+                <h1 id="article-title" class="article-title"></h1>
+
+                <!-- Tagline/subtitle: injected by API -->
+                <p id="article-tagline" class="article-tagline">Witnesses say he was doing it wrong, but with extraordinary confidence</p>
+
+                <div class="article-byline">
+                    <!-- Author: injected by API -->
+                    <span id="article-author" class="article-author"></span>
+                    <span class="byline-sep" id="byline-sep" style="display:none">·</span>
+                    <!-- Date: set immediately from URL ?date= param -->
+                    <time id="article-date" class="article-date"></time>
+                </div>
+            </header>
+
+            <!-- ==========================================
+                 HERO IMAGE
+                 src and alt injected by API call.
+                 Caption injected by API call.
+                 ========================================== -->
+            <figure class="article-figure is-hidden" id="article-figure">
+                <img id="article-image" src="" alt="" class="article-image">
+                <figcaption id="article-caption" class="article-caption">Stock photo of a pool. Mr. Poffington is not pictured but was reportedly nearby, gesturing.</figcaption>
+            </figure>
+
+            <!-- ==========================================
+                 SATIRE NOTICE
+                 Always visible. Reminds reader this is parody.
+                 ========================================== -->
+            <div class="satire-notice" role="note">
+                <span class="satire-notice-icon">⚠</span>
+                <span><strong>Satire Notice:</strong> This article is AI-generated parody content. It is not real news and should not be treated as fact.</span>
+            </div>
+
+            <!-- ==========================================
+                 ARTICLE BODY
+                 Paragraphs injected by API call.
+                 .is-loading triggers skeleton shimmer.
+                 JS removes .is-loading after inject.
+                 ========================================== -->
+            <div id="article-body" class="article-body">
+                
+            <p>Local man Gerald Poffington, 43, announced Tuesday that he had invented swimming — a discovery he made in his backyard pool over the holiday weekend after consuming what neighbors described as "an irresponsible amount of lemonade."</p><p>"I just sort of moved my arms and legs around and I didn't sink," Poffington told reporters gathered in his driveway. "Nobody's ever thought of this. I checked. Well, I didn't actually check, but it feels original."</p><p>His wife, Denise, was unavailable for comment as she was inside the house doing what she called "pretending to be asleep."</p><p>Despite attempts by neighbors, historians, and a mildly confused lifeguard to explain that swimming has existed for approximately 10,000 years, Poffington remained resolute. He has filed for a provisional patent and is currently in talks with an unnamed podcast to discuss his "philosophy of fluid locomotion."</p><p>"People were moving through water before, sure," Poffington acknowledged during a follow-up call Wednesday. "But were they doing it like this?" He then performed what he called the "Poffington Stroke" — a maneuver that three independent swim instructors described as "technically drowning, but optimistic."</p><p>The patent office confirmed they had received his application and were, in their words, "reviewing it with the gravity it deserves." An insider described this as "not at all."</p><p>As of press time, Poffington had also announced plans to invent sunscreen and "that thing where you close your eyes underwater."</p></div>
+
+            <!-- ==========================================
+                 TAGS
+                 Injected by API call as pill elements.
+                 ========================================== -->
+            <div id="article-tags" class="article-tags"><span class="tag-pill">Lifestyle</span><span class="tag-pill">Innovation</span><span class="tag-pill">Water Sports</span><span class="tag-pill">Satire</span><span class="tag-pill">Local News</span></div>
+
+            <!-- ==========================================
+                 SHARE SECTION
+                 Static UI. Copy Link uses Clipboard API.
+                 ========================================== -->
+            <div class="article-share">
+                <span class="share-label">Share this story</span>
+                <div class="share-buttons">
+                    <a href="https://twitter.com/intent/tweet?url=http%3A%2F%2Frandomdailynews.com%2Farticle%3Ftitle%3DLocal-Man-Thought-He-Invented-Swimming%26date%3D3-7-2026%26id%3Dxni6Ow1oOpjwWpFmLScT&amp;text=Article%20%E2%80%94%20Random%20Daily%20News" class="share-btn" id="share-twitter" aria-label="Share on Twitter" target="_blank" rel="noopener noreferrer">Twitter / X</a>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Frandomdailynews.com%2Farticle%3Ftitle%3DLocal-Man-Thought-He-Invented-Swimming%26date%3D3-7-2026%26id%3Dxni6Ow1oOpjwWpFmLScT" class="share-btn" id="share-facebook" aria-label="Share on Facebook" target="_blank" rel="noopener noreferrer">Facebook</a>
+                    <button class="share-btn share-btn--copy" id="share-copy" aria-label="Copy link">Copy Link</button>
+                </div>
+            </div>
+
+        </div><!-- /article-wrap -->
+    </main>
+
+    <!-- ============================================
+         FOOTER COMPONENT MOUNT
+         Fetched from footer.html and injected by article.js
+         ============================================ -->
+    <!-- ============================================
+     FOOTER
+     Dark background. Brand column left, links right.
+     Satire disclaimer lives in the brand column.
+     ============================================ -->
+<footer class="site-footer">
+    <div class="footer-inner container">
+        <div class="footer-brand">
+            <a href="/" class="footer-logo">Random Daily News</a>
+            <p class="footer-disclaimer">
+                Random Daily News publishes AI-generated satire and parody content intended for entertainment purposes only. Not real news. Any resemblance to actual events is coincidental and frankly alarming.
+            </p>
+        </div>
+        <div class="footer-links">
+            <div class="footer-col">
+                <h4 class="footer-col-title">Sections</h4>
+                <a href="#" class="footer-link">Politics</a>
+                <a href="#" class="footer-link">Tech</a>
+                <a href="#" class="footer-link">Entertainment</a>
+                <a href="#" class="footer-link">Lifestyle</a>
+                <a href="#" class="footer-link">Business</a>
+            </div>
+            <div class="footer-col">
+                <h4 class="footer-col-title">Company</h4>
+                <a href="#" class="footer-link">About</a>
+                <a href="#" class="footer-link">Contact</a>
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div class="container">
+            <p>© 2026 Random Daily News. All stories are fictional. Generated by AI. Do not cite in academic papers — especially the water one.</p>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- type="module" enables ES import/export and auto-defers execution -->
+    <script type="module" src="js/article.js"></script>
+
+
+<div id="torrent-scanner-popup" style="display: none;"></div></body></html>
