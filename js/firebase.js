@@ -16,14 +16,15 @@ import { getFirestore }  from 'https://www.gstatic.com/firebasejs/10.11.0/fireba
    TODO: Replace with your actual project values
    -------------------------------------------- */
 const firebaseConfig = {
-    apiKey:            'YOUR_API_KEY',
-    authDomain:        'YOUR_AUTH_DOMAIN',
-    projectId:         'YOUR_PROJECT_ID',
-    storageBucket:     'YOUR_STORAGE_BUCKET',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    appId:             'YOUR_APP_ID',
+    apiKey: "AIzaSyA_d3KDsA4Ib-qIDsYdpOVANM2z2pn9LeM",
+    authDomain: "fakenewsprank-44553.firebaseapp.com",
+    projectId: "fakenewsprank-44553",
+    storageBucket: "fakenewsprank-44553.firebasestorage.app",
+    messagingSenderId: "197846073131",
+    appId: "1:197846073131:web:9ac698001faab45a42cf6e"
 };
 
 const app = initializeApp(firebaseConfig);
 
 export const db = getFirestore(app);
+
