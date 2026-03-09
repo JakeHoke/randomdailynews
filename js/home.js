@@ -1,5 +1,5 @@
 /**
- * Random Daily News — Test Homepage Script
+ * Random Daily News — Homepage Script
  * Reads from `test_homepage/main` instead of `homepage/main`
  */
 
@@ -125,7 +125,24 @@ async function loadHomepageData() {
    -------------------------------------------- */
 function renderCard(article, prefix) {
     if (!article) return;
-    const url = `/article?id=${article.id}`;
+    
+    let url = `/article?id=${article.id}`;
+    
+    // Add title to URL if available
+    if (article.title && article.title !== 'Untitled') {
+        const safeTitle = encodeURIComponent(article.title.replace(/\s+/g, '-'));
+        url = `/article?title=${safeTitle}&id=${article.id}`;
+        
+        // Add date to URL if available (only if title is also present to match structure)
+        if (article.createdAt && article.createdAt.toDate) {
+            const d = article.createdAt.toDate();
+            const safeDate = `${d.getMonth() + 1}-${d.getDate()}-${d.getFullYear()}`;
+            url = `/article?title=${safeTitle}&date=${safeDate}&id=${article.id}`;
+        } else if (article.monthKey) {
+            url = `/article?title=${safeTitle}&date=${article.monthKey}&id=${article.id}`;
+        }
+    }
+    
     const imageUrl = article.image || article.imageUrl || '';
     
     setAttr(`${prefix}-link`, 'href', url);
