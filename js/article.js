@@ -104,10 +104,35 @@ function formatMonthKey(monthKey) {
     return label ? `${label} ${year}` : monthKey;
 }
 
+// Firestore Timestamp / JS Date → "Month D, YYYY"
+function formatTimestamp(date) {
+    const MONTHS = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December',
+    ];
+    return `${MONTHS[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+}
+
 // 4 → "4 min read"
 function formatReadTime(readTime) {
     if (!readTime && readTime !== 0) return '';
     return `${readTime} min read`;
+}
+
+// "local-man-invented-swimming" → "Local Man Invented Swimming"
+// Used as a title fallback when the title field is missing from Firestore.
+function formatSlug(slug) {
+    if (!slug) return '';
+    return slug
+        .replace(/-/g, ' ')
+        .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+// title → slug: "Local Man Invented Swimming" → "local-man-invented-swimming"
+// Useful for generating slugs consistently without storing them.
+function titleToSlug(title) {
+    if (!title) return '';
+    return title.toLowerCase().replace(/\s+/g, '-');
 }
 
 /* --------------------------------------------
@@ -145,6 +170,7 @@ function setAttr(id, attr, value) {
 
    Field mapping (Firestore → HTML element):
      title        → #article-title + document.title
+                    (falls back to formatting the slug field)
      tagline      → #article-tagline
      authorName   → #article-author
      category     → #article-category (pill class + label)
@@ -155,21 +181,32 @@ function setAttr(id, attr, value) {
      body[]       → <p> elements in #article-body
      tags[]       → .tag-pill spans in #article-tags
      monthKey     → #article-date ("Month YYYY")
+                    (falls back to publishedAt / createdAt Timestamps)
    -------------------------------------------- */
 function injectArticle(data) {
     log('Injecting Firestore data', data.title);
 
-    // Title — override Phase 1 if Firestore has one
-    const title = data.title;
+    // Title — use title field, fall back to formatting the slug
+    const title = data.title || formatSlug(data.slug);
     if (title) {
         document.title = `${title} — Random Daily News`;
         const titleEl = document.getElementById('article-title');
         if (titleEl) titleEl.textContent = title;
+        
+        // Open Graph & Twitter Titles
+        setAttr('og-title', 'content', title);
+        setAttr('twitter-title', 'content', title);
     }
 
     // Tagline
     const taglineEl = document.getElementById('article-tagline');
-    if (taglineEl && data.tagline) taglineEl.textContent = data.tagline;
+    if (data.tagline) {
+        if (taglineEl) taglineEl.textContent = data.tagline;
+        
+        // Open Graph & Twitter Descriptions
+        setAttr('og-description', 'content', data.tagline);
+        setAttr('twitter-description', 'content', data.tagline);
+    }
 
     // Category pill
     const categoryEl = document.getElementById('article-category');
@@ -195,10 +232,16 @@ function injectArticle(data) {
         if (sepEl) sepEl.style.display = '';
     }
 
-    // Date — use monthKey if present; otherwise keep the Phase 1 URL date
+    // Date — try monthKey string, then Firestore Timestamp fields
     const dateEl = document.getElementById('article-date');
-    if (dateEl && data.monthKey) {
-        dateEl.textContent = formatMonthKey(data.monthKey);
+    if (dateEl) {
+        if (data.monthKey) {
+            dateEl.textContent = formatMonthKey(data.monthKey);
+        } else if (data.publishedAt?.toDate) {
+            dateEl.textContent = formatTimestamp(data.publishedAt.toDate());
+        } else if (data.createdAt?.toDate) {
+            dateEl.textContent = formatTimestamp(data.createdAt.toDate());
+        }
     }
 
     // Hero image — try imageUrl, fall back to image (legacy field name)
@@ -206,11 +249,18 @@ function injectArticle(data) {
     if (imageSrc) {
         setAttr('article-image', 'src', imageSrc);
         setAttr('article-image', 'alt', data.imageAlt || data.tagline || '');
+        
+        // Open Graph & Twitter Images
+        setAttr('og-image', 'content', imageSrc);
+        setAttr('twitter-image', 'content', imageSrc);
     } else {
         // No image available — hide the figure entirely
         const fig = document.getElementById('article-figure');
         if (fig) fig.classList.add('is-hidden');
     }
+
+    // Open Graph URL
+    setAttr('og-url', 'content', window.location.href);
 
     // Image caption
     const captionEl = document.getElementById('article-caption');
@@ -274,6 +324,17 @@ function showError(articleId) {
 function removeBodyLoading() {
     const bodyEl = document.getElementById('article-body');
     if (bodyEl) bodyEl.classList.remove('is-loading');
+}
+
+/* --------------------------------------------
+   Remove Header Skeleton
+   Removes .is-loading from the article header,
+   revealing the title, tagline, and byline — and
+   hiding the shimmer placeholder blocks.
+   -------------------------------------------- */
+function removeHeaderLoading() {
+    const headerEl = document.getElementById('article-header');
+    if (headerEl) headerEl.classList.remove('is-loading');
 }
 
 /* --------------------------------------------
@@ -355,12 +416,14 @@ async function init() {
 
         } finally {
             removeBodyLoading();
+            removeHeaderLoading();
         }
 
     } else {
         log('No ?id= param in URL');
         showError('');
         removeBodyLoading();
+        removeHeaderLoading();
     }
 
     // Share buttons build their URLs from window.location — init after all params are known
