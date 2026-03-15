@@ -80,6 +80,20 @@ function initStickyHeader() {
 }
 
 /* --------------------------------------------
+   Topbar Date
+   -------------------------------------------- */
+function setTopbarDate() {
+    const el = document.getElementById('topbar-date');
+    if (!el) return;
+    el.textContent = new Date().toLocaleDateString('en-US', {
+        weekday: 'long',
+        year:    'numeric',
+        month:   'long',
+        day:     'numeric',
+    });
+}
+
+/* --------------------------------------------
    URL: Article ID
    Reads the ?id= query parameter.
    -------------------------------------------- */
@@ -175,7 +189,7 @@ function setAttr(id, attr, value) {
      authorName   → #article-author
      category     → #article-category (pill class + label)
      readTime     → #article-read-time ("N min read")
-     imageUrl     → #article-image src
+     imageUrl / image / imageOptions[0]  → #article-image src
      imageAlt     → #article-image alt
      imageCaption → #article-caption
      body[]       → <p> elements in #article-body
@@ -192,21 +206,11 @@ function injectArticle(data) {
         document.title = `${title} — Random Daily News`;
         const titleEl = document.getElementById('article-title');
         if (titleEl) titleEl.textContent = title;
-        
-        // Open Graph & Twitter Titles
-        setAttr('og-title', 'content', title);
-        setAttr('twitter-title', 'content', title);
     }
 
     // Tagline
     const taglineEl = document.getElementById('article-tagline');
-    if (data.tagline) {
-        if (taglineEl) taglineEl.textContent = data.tagline;
-        
-        // Open Graph & Twitter Descriptions
-        setAttr('og-description', 'content', data.tagline);
-        setAttr('twitter-description', 'content', data.tagline);
-    }
+    if (taglineEl && data.tagline) taglineEl.textContent = data.tagline;
 
     // Category pill
     const categoryEl = document.getElementById('article-category');
@@ -244,23 +248,16 @@ function injectArticle(data) {
         }
     }
 
-    // Hero image — try imageUrl, fall back to image (legacy field name)
-    const imageSrc = data.imageUrl || data.image;
+    // Hero image — try imageUrl, then image; if both empty fall back to first generated option
+    const imageSrc = data.imageUrl || data.image || data.imageOptions?.[0];
     if (imageSrc) {
         setAttr('article-image', 'src', imageSrc);
         setAttr('article-image', 'alt', data.imageAlt || data.tagline || '');
-        
-        // Open Graph & Twitter Images
-        setAttr('og-image', 'content', imageSrc);
-        setAttr('twitter-image', 'content', imageSrc);
     } else {
         // No image available — hide the figure entirely
         const fig = document.getElementById('article-figure');
         if (fig) fig.classList.add('is-hidden');
     }
-
-    // Open Graph URL
-    setAttr('og-url', 'content', window.location.href);
 
     // Image caption
     const captionEl = document.getElementById('article-caption');
@@ -392,7 +389,7 @@ async function init() {
 
     // Load site-wide components concurrently with Firestore fetch
     loadComponent(CONFIG.headerUrl, 'header-mount')
-        .then(() => initStickyHeader());
+        .then(() => { initStickyHeader(); setTopbarDate(); });
 
     loadComponent(CONFIG.footerUrl, 'footer-mount');
 

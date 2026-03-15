@@ -23,6 +23,24 @@ const CONFIG = {
 };
 
 /* --------------------------------------------
+   Placeholder Images
+   Used when a Firestore card has no imageUrl/image field.
+   Cycled by card index so cards don't all show the same photo.
+   -------------------------------------------- */
+const PLACEHOLDER_IMAGES = [
+    'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800',  // newspaper / press
+    'https://images.unsplash.com/photo-1495364141860-b0d03eccd065?w=800',  // alarm clock
+    'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800',     // abstract / tech
+    'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800',  // laptop
+    'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800',  // phone / app
+    'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=800',     // water / nature
+];
+
+function getPlaceholder(index) {
+    return PLACEHOLDER_IMAGES[index % PLACEHOLDER_IMAGES.length];
+}
+
+/* --------------------------------------------
    Fallback Data
    Rendered when the Firestore read fails so the
    page never shows empty card placeholders.
@@ -131,6 +149,23 @@ async function loadComponent(url, mountId) {
 }
 
 /* --------------------------------------------
+   Topbar Date
+   Replaces the hardcoded date in header.html with
+   today's date each time the page loads.
+   -------------------------------------------- */
+function setTopbarDate() {
+    const el = document.getElementById('topbar-date');
+    if (!el) return;
+    const now = new Date();
+    el.textContent = now.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year:    'numeric',
+        month:   'long',
+        day:     'numeric',
+    });
+}
+
+/* --------------------------------------------
    Sticky Header: Shadow on Scroll
    Must run AFTER header.html is injected so that
    #site-header exists in the DOM.
@@ -170,7 +205,7 @@ function populateHero(hero) {
 
 /* --------------------------------------------
    Populate: Featured Cards (card1, card2, card3)
-   Firestore fields per item: image, title, tagline, url, category
+   Firestore fields per item: imageUrl (or image), title, tagline, url, category
    -------------------------------------------- */
 function populateFeatured(featured) {
     if (!Array.isArray(featured)) {
@@ -184,8 +219,9 @@ function populateFeatured(featured) {
         const n    = i + 1;
         if (!card) continue;
 
+        const cardImg = card.imageUrl || card.image;
         setLinkHref(`card${n}-link`,        card.url);
-        setAttribute(`card${n}-image`, 'src', card.image);
+        if (cardImg) setAttribute(`card${n}-image`, 'src', cardImg);
         setAttribute(`card${n}-image`, 'alt', card.title);
         setTextContent(`card${n}-title`,    card.title);
         setTextContent(`card${n}-tagline`,  card.tagline);
@@ -194,7 +230,7 @@ function populateFeatured(featured) {
 
 /* --------------------------------------------
    Populate: Top Articles of the Month (top1–top6)
-   Firestore fields per item: image, title, tagline, url
+   Firestore fields per item: imageUrl (or image), title, tagline, url
    -------------------------------------------- */
 function populateTopMonth(topMonth) {
     if (!Array.isArray(topMonth)) {
@@ -208,8 +244,9 @@ function populateTopMonth(topMonth) {
         const n    = i + 1;
         if (!card) continue;
 
+        const topImg = card.imageUrl || card.image;
         setLinkHref(`top${n}-link`,        card.url);
-        setAttribute(`top${n}-image`, 'src', card.image);
+        if (topImg) setAttribute(`top${n}-image`, 'src', topImg);
         setAttribute(`top${n}-image`, 'alt', card.title);
         setTextContent(`top${n}-title`,    card.title);
         setTextContent(`top${n}-tagline`,  card.tagline);
@@ -270,7 +307,7 @@ async function init() {
     log('Initializing Random Daily News');
 
     loadComponent(CONFIG.headerUrl, 'header-mount')
-        .then(() => initStickyHeader());
+        .then(() => { initStickyHeader(); setTopbarDate(); });
 
     loadComponent(CONFIG.footerUrl, 'footer-mount');
 
