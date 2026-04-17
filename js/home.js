@@ -181,6 +181,21 @@ function renderTopMonth(articles) {
     }
 }
 
+
+/* --------------------------------------------
+   Topbar Date
+   -------------------------------------------- */
+function setTopbarDate() {
+    const el = document.getElementById('topbar-date');
+    if (!el) return;
+    el.textContent = new Date().toLocaleDateString('en-US', {
+        weekday: 'long',
+        year:    'numeric',
+        month:   'long',
+        day:     'numeric',
+    });
+}
+
 /* --------------------------------------------
    Initialize
    -------------------------------------------- */
