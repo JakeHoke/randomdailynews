@@ -202,7 +202,9 @@ function setTopbarDate() {
 async function init() {
     log('Initializing test homepage');
 
-    loadComponent(CONFIG.headerUrl, 'header-mount').then(() => initStickyHeader());
+    loadComponent(CONFIG.headerUrl, 'header-mount')
+        .then(() => { initStickyHeader(); setTopbarDate(); });
+    
     loadComponent(CONFIG.footerUrl, 'footer-mount');
 
     try {
